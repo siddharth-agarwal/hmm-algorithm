@@ -88,13 +88,5 @@ runModel <- function(stockData,states, startTraining, endTraining, trainDays, al
       correctReturns[i] = returns
     }
     sharpe[i,2] = returns
+    return(returns.to.graph)
   }
-CalculateReturns(probabilities,capital,benchmark)
-dfx = xts(sharpe$returns, order.by=as.Date(sharpe$date))
-SharpeRatio.annualized(dfx, Rf = .00009, scale = 252, geometric=TRUE)
-((capital-100)/100)*100
-((benchmark-100)/100)*100
-
-correctReturns = na.omit(correctReturns)
-incorrectReturns = na.omit(incorrectReturns)
-((correct/(correct+incorrect))*(mean(correctReturns))) + ((incorrect/(correct+incorrect))*(mean(incorrectReturns)))

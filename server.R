@@ -33,4 +33,8 @@ shinyServer(
         head(data)
       }
     })
+    
+    output$returns <- renderTable({
+      runModel(GetData(input$symbol,input$date), as.integer(input$states), as.Date(input$date), NextTradingDate(input$date,input$window), as.integer(input$time))
+    })
 })

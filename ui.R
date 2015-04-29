@@ -1,5 +1,6 @@
 # ui.R
-
+library(quantmod)
+library(depmixS4)
 shinyUI(fluidPage(
   titlePanel("Algorithm Backtester"),
   
@@ -19,10 +20,10 @@ shinyUI(fluidPage(
                       value = "2010-04-04"),
                     sliderInput("window", 
                       label = "Backtest time window (trading days):",
-                      min = 1, max = 100, value = 50),
+                      min = 1, max = 100, value = 10),
                     sliderInput("time", 
                       label = "Backtest time period (trading days):",
-                      min = 10, max = 252, value = 100),
+                      min = 10, max = 252, value = 20),
                     radioButtons("states", 
                       label = h3("Number of States"),
                       choices = list("2" = 2, "3" = 3, "4" = 4),selected = 2),
@@ -33,16 +34,23 @@ shinyUI(fluidPage(
                   )
                 ),
                 mainPanel(
-                  h1("Backtest"),
-                  p("This application backtests an algorithm for a certain time period."),
-                  textOutput("model"),
-                  br(),
-                  textOutput("trainingStart"),
-                  textOutput("trainingEnd"),
-                  textOutput("algoEnd"),
-                  br(),
-                  tableOutput("prices")
-                  
+                  tabsetPanel(
+                    tabPanel("Main",
+                      br(),
+                      h4("This application backtests an algorithm for a certain time period."),
+                      textOutput("model"),
+                      br(),
+                      textOutput("trainingStart"),
+                      textOutput("trainingEnd"),
+                      textOutput("algoEnd")
+                    ),
+                    tabPanel("Price Preview",
+                      tableOutput("prices")
+                    ),
+                    tabPanel("Backtest Plot",
+                      tableOutput("returns")
+                    )
+                  )
                 )
   )
 ))
