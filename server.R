@@ -25,16 +25,30 @@ shinyServer(
       }
     })
     
+    dataInput <- reactive({
+      GetData(input$symbol, input$date)
+    })
+    
+    dataReturns <- reactive({
+      if (input$showBacktest){
+        data = runModel(dataInput(), as.integer(input$states), as.Date(input$date), NextTradingDate(input$date,input$window), as.integer(input$time))
+      }
+    })
+    
     output$prices <- renderTable({
       if (input$showPrices){
-        source("func.r")
-        start.date = as.Date(input$date)
-        data = GetData(input$symbol,input$date)
+        data = dataInput()
         head(data)
       }
     })
     
-    output$returns <- renderTable({
-      runModel(GetData(input$symbol,input$date), as.integer(input$states), as.Date(input$date), NextTradingDate(input$date,input$window), as.integer(input$time))
+    output$returns <- renderDataTable({
+      dataReturns()
+    })
+    
+    output$plot <- renderPlot({
+      ggplot(dataReturns(), aes(as.Date(X20L))) + 
+        geom_line(aes(y = benchmark.time, colour = "benchmark")) + 
+        geom_line(aes(y = returns.time, colour = "returns"))
     })
 })

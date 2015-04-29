@@ -1,6 +1,7 @@
 # ui.R
 library(quantmod)
 library(depmixS4)
+library(ggplot2)
 shinyUI(fluidPage(
   titlePanel("Algorithm Backtester"),
   
@@ -30,7 +31,9 @@ shinyUI(fluidPage(
                     actionButton("showDates",
                       label = h4("Show chosen dates")),
                     actionButton("showPrices",
-                      label = h4("Show preview of price series"))
+                      label = h4("Show preview of price series")),
+                    actionButton("showBacktest",
+                      label = h4("Show backtest data"))
                   )
                 ),
                 mainPanel(
@@ -47,8 +50,11 @@ shinyUI(fluidPage(
                     tabPanel("Price Preview",
                       tableOutput("prices")
                     ),
+                    tabPanel("Backtest",
+                      dataTableOutput("returns")
+                    ),
                     tabPanel("Backtest Plot",
-                      tableOutput("returns")
+                      plotOutput("plot")
                     )
                   )
                 )

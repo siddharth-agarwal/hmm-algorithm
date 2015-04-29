@@ -44,6 +44,7 @@ NextTradingDate <- function(Date, n=1) {
   }
 }
 
+#  trade if bull market trend detected and record if prediction was correct
 BullMarket <- function(bull.obs,capital,consec.pos,x1){
   if (consec.pos > 0){
     if(x1 < 0){
@@ -57,6 +58,7 @@ BullMarket <- function(bull.obs,capital,consec.pos,x1){
   return(capital)
 }
 
+#  trade if bear market trend detected and record if prediction was correct
 BearMarket <- function(bear.obs,capital,consec.neg, x1){
   correct = 2
   if (consec.neg > 0){
@@ -71,28 +73,29 @@ BearMarket <- function(bear.obs,capital,consec.neg, x1){
   return(capital)
 }
 
-DetermineTrend <- function(prev.cap,capital,trend){
-  
-  diff = capital - prev.cap
-  if(prev.cap <= capital){
-    if (trend < 1){
-      trend = 1
-    }
-    else{
-      trend = trend + 1
-    }
-  }
-  else{
-    if(trend > 1){
-      trend = -1
-    }
-    else {
-      trend = trend - 1
-    }
-  }
-  return(trend)
-}
+# DetermineTrend <- function(prev.cap,capital,trend){
+#   
+#   diff = capital - prev.cap
+#   if(prev.cap <= capital){
+#     if (trend < 1){
+#       trend = 1
+#     }
+#     else{
+#       trend = trend + 1
+#     }
+#   }
+#   else{
+#     if(trend > 1){
+#       trend = -1
+#     }
+#     else {
+#       trend = trend - 1
+#     }
+#   }
+#   return(trend)
+# }
 
+# recalculate exponential moving average of proabilities
 RepopAvg <- function(average,bull.obs){
   average[3] = average[2]
   average[2] = average[1]
@@ -100,16 +103,18 @@ RepopAvg <- function(average,bull.obs){
   return(average)
 }
 
-RecalcAvg <- function(inputs,average){
-  average = mean(inputs)
-  return(average)
-}
+# RecalcAvg <- function(inputs,average){
+#   average = mean(inputs)
+#   return(average)
+# }
 
+# calculate daily returns
 CalcReturns <- function(prev.cap,capital){
   returns = ((capital-prev.cap)/capital)
   return(returns)
 }
 
+# pull data from Yahoo Finance
 GetData <- function(symbol, startdate){
   start.date = as.Date(startdate)
   data = getSymbols(symbol, src = "yahoo", from = start.date, env=NULL, return.class="xts")
@@ -117,6 +122,7 @@ GetData <- function(symbol, startdate){
   return(data)
 }
 
+# run loop for model
 runModel <- function(stockData,states, startTraining, endTraining, algoDays){
   kTimeframe = algoDays
   kStates = states
