@@ -1,4 +1,8 @@
 # server.R
+library(quantmod)
+library(depmixS4)
+library(ggplot2)
+source("func.r")
 shinyServer(
   function(input, output) {
     output$model <- renderText({
@@ -30,12 +34,16 @@ shinyServer(
     })
     
     dataReturns <- reactive({
-      if (input$showBacktest){
-        data = runModel(dataInput(), as.integer(input$states), as.Date(input$date), NextTradingDate(input$date,input$window), as.integer(input$time))
-      }
+      data = data.frame(time= list(input$time), returns.time= numeric(input$time), benchmark.time = numeric(input$time))
+      print(dimnames(data))
+      dimnames(data)[[2]] <- c("time", "returns", "benchmark")
+      print(dimnames(data))
+      data = runModel(dataInput(), as.integer(input$states), as.Date(input$date), NextTradingDate(input$date,input$window), as.integer(input$time))
+      dimnames(data)[[2]] <- c("time", "returns", "benchmark")
+      return(data)
     })
     
-    output$prices <- renderTable({
+    output$prices <- renderDataTable({
       if (input$showPrices){
         data = dataInput()
         head(data)
@@ -43,12 +51,20 @@ shinyServer(
     })
     
     output$returns <- renderDataTable({
-      dataReturns()
+      if (input$showBacktest){
+        data2 = data.frame(time= list(input$time), returns.time= numeric(input$time), benchmark.time = numeric(input$time))
+        data2 = dataReturns()
+        dimnames(data2)[[2]] <- c("time", "returns", "benchmark")
+        return(data2)
+      }
     })
     
     output$plot <- renderPlot({
-      ggplot(dataReturns(), aes(as.Date(X20L))) + 
-        geom_line(aes(y = benchmark.time, colour = "benchmark")) + 
-        geom_line(aes(y = returns.time, colour = "returns"))
+      
+      if (input$showBacktest){
+        ggplot(dataReturns(), aes(as.Date(time))) + 
+          geom_line(aes(y = benchmark, colour = "benchmark")) + 
+          geom_line(aes(y = returns, colour = "returns"))
+      }
     })
 })
